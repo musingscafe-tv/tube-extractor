@@ -3,15 +3,26 @@ package com.musingscafe.tube.extractor;
 import com.google.common.eventbus.EventBus;
 import com.musingscafe.tube.extractor.commands.youtube.DownloadPortion;
 import com.musingscafe.tube.extractor.commands.youtube.GetDirectLink;
+import org.slf4j.LoggerFactory;
+import spark.Spark;
+
+import static spark.Spark.get;
 
 public class App {
+    private final static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(App.class);
     private boolean shouldWait = true;
     final EventBus shellEventBus = new EventBus("shellEventBus");
     final EventBus appEventBus = new EventBus("appEventBus");
 
     public static void main(String[] args) {
-        final App app = new App();
-        app.start();
+        Spark.staticFiles.location("/public");
+        get("/hello", (req, res) -> {
+            App app = new App();
+            app.start();
+            return "Hello";
+        });
+        get("/helloworld", (req, res) -> "Hello World");
+
     }
 
     public void start() {
