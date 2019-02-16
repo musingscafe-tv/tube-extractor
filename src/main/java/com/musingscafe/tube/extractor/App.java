@@ -16,13 +16,13 @@ public class App {
 
     public void start() {
         final ShellCommandExecutor executor = new ShellCommandExecutor(shellEventBus);
-        final GetDirectLink directLink = new GetDirectLink("https://www.youtube.com/watch?v=ZevT5wvFShU");
+        final GetDirectLink directLink = new GetDirectLink("https://www.youtube.com/watch?v=MsnpHI8E7ec");
 
         final DownloadPortion portion = new DownloadPortion();
         portion.setDirectLink(directLink.getUrl());
-        portion.setStartTime("00:19:44");
-        portion.setEndTime("00:20:21");
-        portion.setOutputPath("./ZevT5wvFShU.mp4");
+        portion.setStartTime("00:01:44");
+        portion.setEndTime("00:02:21");
+        portion.setOutputPath("./MsnpHI8E7ec.mp4");
         executor.submit(portion, new ShellCallback() {
             @Override
             public void onComplete(ShellResponse shellResponse) {

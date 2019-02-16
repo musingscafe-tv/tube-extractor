@@ -5,7 +5,7 @@ import com.musingscafe.tube.extractor.commands.ShellCommand;
 import java.util.UUID;
 
 public class DownloadPortion extends ShellCommand {
-    private static final String TEMPLATE = "ffmpeg $(youtube-dl -g '%s' | sed \"s/.*/-ss %s -i &/\") -t %s -c copy %s";
+    private static final String TEMPLATE = "ffmpeg $(youtube-dl -g '%s' | sed \"s/.*/-ss %s -i &/\") -t %s -c copy -strict -2 %s";
     private String directLink;
     private String startTime;
     private String endTime;
