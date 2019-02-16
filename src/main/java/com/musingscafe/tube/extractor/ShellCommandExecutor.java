@@ -1,9 +1,7 @@
 package com.musingscafe.tube.extractor;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.musingscafe.tube.extractor.commands.ShellCommand;
-import com.musingscafe.tube.extractor.events.LifeCycleEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,18 +17,18 @@ public class ShellCommandExecutor {
 
     public ShellCommandExecutor(EventBus shellEventBus) {
         this.shellEventBus = shellEventBus;
-        this.shellEventBus.register(this);
     }
 
-    public void submit(ShellCommand shellCommand) {
-        taskService.submit(() -> execute(shellCommand));
+    public void submit(ShellCommand shellCommand, ShellCallback shellCallback) {
+        taskService.submit(() -> execute(shellCommand, shellCallback));
         System.out.println(String.format("Submitted %s", shellCommand.getCommandName()));
     }
 
-    public void execute(ShellCommand shellCommand) {
+    public void execute(ShellCommand shellCommand, ShellCallback shellCallback) {
         final StringBuffer outBuffer = new StringBuffer();
         final StringBuffer errBuffer = new StringBuffer();
         final ProcessBuilder processBuilder = new ProcessBuilder();
+        System.out.println(shellCommand.prepare());
         processBuilder.command("sh", "-c", shellCommand.prepare());
 
         Process process = null;
@@ -50,17 +48,21 @@ public class ShellCommandExecutor {
             errFuture.get();
 
         } catch (IOException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            shellCallback.onError(e);
         }
 
         final ShellResponse response = new ShellResponse();
         response.setCommandName(shellCommand.getCommandName());
         response.setCommandGroup(shellCommand.getCommandGroup());
         response.setResponse(outBuffer.toString());
-        shellEventBus.post(response);
+//        shellEventBus.post(response);
+        if (shellCallback != null) {
+            System.out.println("calling back " + shellCommand.getCommandName());
+            shellCallback.onComplete(response);
+        }
     }
 
-    @Subscribe public void onShutDown(ShellResponse shellResponse) {
+    public void shutDown() {
         service.shutdown();
         taskService.shutdown();
     }

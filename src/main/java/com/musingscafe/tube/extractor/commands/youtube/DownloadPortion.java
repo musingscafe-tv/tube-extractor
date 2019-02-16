@@ -5,12 +5,15 @@ import com.musingscafe.tube.extractor.commands.ShellCommand;
 import java.util.UUID;
 
 public class DownloadPortion extends ShellCommand {
-    private static final String TEMPLATE = "ffmpeg -i %s -ss %s -to %s -c copy %s";
+    private static final String TEMPLATE = "ffmpeg $(youtube-dl -g '%s' | sed \"s/.*/-ss %s -i &/\") -t %s -c copy %s";
     private String directLink;
     private String startTime;
     private String endTime;
     private String outputPath;
 
+    public DownloadPortion() {
+        super(UUID.randomUUID().toString(), null);
+    }
     public DownloadPortion(String directLink, String startTime, String endTime, String outputPath) {
         super(UUID.randomUUID().toString(), null);
         this.directLink = directLink;
